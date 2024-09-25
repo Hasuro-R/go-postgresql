@@ -1,0 +1,42 @@
+version: "3"
+services:
+  api:
+    build:
+      context: .
+    volumes:
+      - .:/app
+    ports:
+      - 8095:8095
+    networks:
+      go_postgresql_network:
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:15.5
+    command: "postgres -c log_destination=stderr -c log_statement=all -c log_connections=on -c log_disconnections=on"
+    environment:
+      POSTGRES_DB: "go_postgresql"
+      POSTGRES_USER: "go_postgresql"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+    ports:
+      - 5432:5432
+    volumes:
+      - "go-postgresql-datavolume:/var/lib/postgresql/data"
+    networks:
+      recuord_api_network:
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d recuord -U recuord"]
+      interval: 10s
+      timeout: 15s
+      retries: 5
+
+volumes:
+  go-postgresql-datavolume:
+
+networks:
+  go_postgresql_network:
+    driver: bridge

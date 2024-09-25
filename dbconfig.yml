@@ -1,0 +1,11 @@
+development:
+  dialect: postgres
+  dir: db/migrations
+  datasource: dbname=recuord_db sslmode=disable
+  table: migrations
+
+production:
+  dialect: postgres
+  dir: db/migrations
+  datasource: dbname=recuord_db sslmode=disable
+  table: migrations
